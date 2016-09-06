@@ -1,0 +1,26 @@
+#!/usr/bin/expect -d
+#Auto ssh to remote login and execute command
+#usage: ip user passwd "command"
+#command need quote
+set command [lindex $argv 2]
+set ip [lindex $argv 0]
+set user [lindex $argv 1]
+set timeout -1
+set cmd_prompt "~.*#?"
+send_user $ip
+send_user $user
+spawn ssh $user@$ip
+sleep 1
+expect {
+	timeout {
+		exit 1
+	}
+	eof {
+		exit 1
+	}
+	-re $cmd_prompt {
+		send "\r$command\r"
+	}
+}
+expect eof
+exit 0
